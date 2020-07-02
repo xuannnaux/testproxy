@@ -40,7 +40,7 @@ func server() {
 			fmt.Println("建立连接错误:%v\n", err)
 			continue
 		}
-		fmt.Println(conn.RemoteAddr(), conn.LocalAddr())
+		fmt.Println("conn1:", conn.RemoteAddr(), conn.LocalAddr())
 		go handle(conn)
 	}
 }
@@ -56,6 +56,8 @@ func handle(sconn net.Conn) {
 		fmt.Printf("连接%v失败:%v\n", ip, err)
 		return
 	}
+
+	fmt.Println("conn2:", dconn.LocalAddr(), dconn.RemoteAddr())
 
 	spkt := mysql.NewPacketIO(sconn)
 	dpkt := mysql.NewPacketIO(dconn)
