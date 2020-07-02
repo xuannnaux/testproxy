@@ -69,8 +69,7 @@ func handle(sconn net.Conn) {
 			if err != nil {
 				panic(err)
 			}
-			fmt.Println(len(data))
-			fmt.Println("wait send to dconn")
+			fmt.Println("recv sconn data len:", len(data), "wait send to dconn")
 			err = dpkt.WritePacket(data)
 			if err != nil {
 				panic(err)
@@ -84,8 +83,7 @@ func handle(sconn net.Conn) {
 			if err != nil {
 				panic(err)
 			}
-			fmt.Println(len(data))
-			fmt.Println("wait send to sconn")
+			fmt.Println("recv dconn data len:", len(data), "wait send to sconn")
 			err = spkt.WritePacket(data)
 			if err != nil {
 				panic(err)
