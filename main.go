@@ -16,8 +16,8 @@ var ip string
 var list string
 
 func main() {
-	flag.StringVar(&ip, "l", ":9897", "-l=0.0.0.0:9897 指定服务监听的端口")
-	flag.StringVar(&list, "d", "127.0.0.1:1789,127.0.0.1:1788", "-d=127.0.0.1:1789,127.0.0.1:1788 指定后端的IP和端口,多个用','隔开")
+	flag.StringVar(&ip, "l", ":3306", "-l=0.0.0.0:9897 指定服务监听的端口")
+	flag.StringVar(&list, "d", "172.16.0.6:3306", "-d=127.0.0.1:1789,127.0.0.1:1788 指定后端的IP和端口,多个用','隔开")
 	flag.Parse()
 	trueList = strings.Split(list, ",")
 	if len(trueList) <= 0 {
@@ -62,11 +62,13 @@ func handle(sconn net.Conn) {
 
 	go func(sconn net.Conn, dconn net.Conn) {
 		for {
+			fmt.Println("wait recv from sconn")
 			data, err := spkt.ReadPacket()
 			if err != nil {
 				panic(err)
 			}
 			fmt.Println(len(data))
+			fmt.Println("wait send to dconn")
 			err = dpkt.WritePacket(data)
 			if err != nil {
 				panic(err)
@@ -75,11 +77,13 @@ func handle(sconn net.Conn) {
 	}(sconn, dconn)
 	go func(sconn net.Conn, dconn net.Conn) {
 		for {
+			fmt.Println("wait recv from dconn")
 			data, err := dpkt.ReadPacket()
 			if err != nil {
 				panic(err)
 			}
 			fmt.Println(len(data))
+			fmt.Println("wait send to sconn")
 			err = spkt.WritePacket(data)
 			if err != nil {
 				panic(err)

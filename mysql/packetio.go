@@ -47,7 +47,7 @@ func (p *PacketIO) ReadPacket() ([]byte, error) {
 	header := []byte{0, 0, 0, 0}
 
 	if _, err := io.ReadFull(p.rb, header); err != nil {
-		return nil, ErrBadConn
+		return nil, err
 	}
 
 	length := int(uint32(header[0]) | uint32(header[1])<<8 | uint32(header[2])<<16)
@@ -65,7 +65,7 @@ func (p *PacketIO) ReadPacket() ([]byte, error) {
 
 	data := make([]byte, length)
 	if _, err := io.ReadFull(p.rb, data); err != nil {
-		return nil, ErrBadConn
+		return nil, err
 	} else {
 		if length < MaxPayloadLen {
 			return data, nil
@@ -74,7 +74,7 @@ func (p *PacketIO) ReadPacket() ([]byte, error) {
 		var buf []byte
 		buf, err = p.ReadPacket()
 		if err != nil {
-			return nil, ErrBadConn
+			return nil, err
 		} else {
 			return append(data, buf...), nil
 		}
@@ -94,9 +94,9 @@ func (p *PacketIO) WritePacket(data []byte) error {
 		data[3] = p.Sequence
 
 		if n, err := p.wb.Write(data[:4+MaxPayloadLen]); err != nil {
-			return ErrBadConn
+			return err
 		} else if n != (4 + MaxPayloadLen) {
-			return ErrBadConn
+			return fmt.Errorf("n != (4 + MaxPayloadLen)")
 		} else {
 			p.Sequence++
 			length -= MaxPayloadLen
@@ -110,9 +110,9 @@ func (p *PacketIO) WritePacket(data []byte) error {
 	data[3] = p.Sequence
 
 	if n, err := p.wb.Write(data); err != nil {
-		return ErrBadConn
+		return err
 	} else if n != len(data) {
-		return ErrBadConn
+		return fmt.Errorf("n != len(data)")
 	} else {
 		p.Sequence++
 		return nil
