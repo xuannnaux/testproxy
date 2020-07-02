@@ -60,6 +60,8 @@ func handle(sconn net.Conn) {
 	spkt := mysql.NewPacketIO(sconn)
 	dpkt := mysql.NewPacketIO(dconn)
 
+
+
 	go func(sconn net.Conn, dconn net.Conn) {
 		for {
 			fmt.Println("wait recv from sconn")
@@ -90,6 +92,9 @@ func handle(sconn net.Conn) {
 			}
 		}
 	}(sconn, dconn)
+
+	ch := make(chan bool, 1)
+	<-ch
 
 	dconn.Close()
 }
